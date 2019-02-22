@@ -1,0 +1,108 @@
+pom.xml:
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.ElenaSmo</groupId>
+  <artifactId>Curs3</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Curs3</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+  <!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
+<dependency>
+    <groupId>commons-net</groupId>
+    <artifactId>commons-net</artifactId>
+    <version>3.6</version>
+</dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
+
+--------------------------------------------------------------------------------------
+package com.ElenaSmo.Curs3;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+public class App 
+{
+	@SuppressWarnings("restriction")
+    public static void main( String[] args ) throws IOException
+    {					
+			//create webserver service
+			HttpServer server = HttpServer.create(new InetSocketAddress(8001),0);
+			//set handler to specified path
+			server.createContext("/", new MyStringHandler());
+			server.createContext("/html", new MyHtmlHandler());
+			server.createContext("/handler", new HandlerOne());
+			//creates a default executor
+			server.setExecutor(null);
+			//start the server
+			server.start();		
+	        System.out.println( "Server started on port 8001" );
+}}
+
+public class MyStringHandler implements HttpHandler {
+
+	public void handle(HttpExchange t) throws IOException {
+		//set the response as a normal string
+		String response="This is the response";
+		//set headers and status code
+		t.sendResponseHeaders(200, response.length());
+		OutputStream os=t.getResponseBody();
+		//send response
+		os.write(response.getBytes());
+		//close request
+		os.close();
+
+	}
+
+}
+@SuppressWarnings("restriction")
+public class MyHtmlHandler implements HttpHandler {
+
+	public void handle(HttpExchange t) throws IOException {
+		//set the response as a normal string
+	String response="<html><body><form action=\"/action_page.php\" method=\"get\">First name:<br>\r\n" + 
+			"  <input type=\"text\" name=\"firstname\" value=\"Mickey\"><br>\r\n" + 
+			"  Last name:<br>\r\n" + 
+			"  <input type=\"text\" name=\"lastname\" value=\"Mouse\"><br><br>\r\n" + 
+			"  <input type=\"submit\" value=\"Submit\">\r\n" + 
+			"</form></body></hmtl>";
+	//set headers and status code
+	t.sendResponseHeaders(200, response.length());
+	OutputStream os=t.getResponseBody();
+	//send response
+	os.write(response.getBytes());
+	//close request
+	os.close();
+	}}
+@SuppressWarnings("restriction")
+public class HandlerOne implements HttpHandler{
+
+	public void handle(HttpExchange t) throws IOException
+    {
+        String response = "DONE";
+        t.sendResponseHeaders(200, response.length());
+        OutputStream os = t.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+	        }	
+	}
+
